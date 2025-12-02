@@ -1,1 +1,7 @@
 /target
+# enviromnent variables
+*.env
+# databases
+*.sqlite 
+*.db 
+*.database
