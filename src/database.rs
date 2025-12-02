@@ -1,6 +1,9 @@
 use rusqlite::Connection;
 use dotenvy;
 
+pub mod models;
+pub mod db_services;
+
 pub fn start_db() -> Result<Connection, String> {
     use std::env;
     
