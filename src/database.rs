@@ -10,10 +10,10 @@ pub fn start_db() -> Result<Connection, String> {
          Ok::<String, String>(String::from("./temp_db.sqlite"))
     }).unwrap();  // unwrap is safe  here why this operation always return a "Ok" 
     
+    let db: Connection = Connection::open(&path).map_err(|e| e.to_string())?; 
+    
     check_path(&path);
-    
-    let db: Connection = Connection::open(path).map_err(|e| e.to_string())?; 
-    
+    generate_tables(&db).map_err(|e| e.to_string())?;
     
     Ok(db)
 }
