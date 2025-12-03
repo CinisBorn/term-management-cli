@@ -12,5 +12,10 @@ pub fn get_input() -> Result<Term, io::Error> {
     println!("👉 Type the origin of term"); io::stdin().read_line(&mut origin)?; 
     println!("👉 Type the definition of term"); io::stdin().read_line(&mut definition)?; 
     
-    Ok(Term { definition,  term, origin, r#type })
+    Ok(Term { 
+        definition: definition.trim().to_string().to_lowercase(), 
+        term: term.trim().to_string().to_lowercase(),
+        origin: origin.trim().to_string().to_lowercase(),
+        r#type: r#type.trim().to_string().to_lowercase()
+    })
 }
