@@ -1,7 +1,7 @@
 #[derive(Debug)]
 pub struct Term {
-    pub definition: String, 
     pub term: String,
-    pub origin: String,
+    pub definition: String, 
     pub r#type: String, 
+    pub origin: String,
 }

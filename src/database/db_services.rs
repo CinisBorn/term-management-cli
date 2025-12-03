@@ -13,7 +13,9 @@ pub fn add_term(db: &Connection, term: Term) -> Result<(), rusqlite::Error> {
 }
 
 pub fn get_term(db: &Connection, term: String) -> Result<Term, rusqlite::Error> {
-    let mut query = db.prepare("SELECT term, origin, type, definition FROM terms WHERE term = ?1")?;
+    let mut query = db.prepare(
+        "SELECT term, origin, type, definition FROM terms WHERE term = ?1"
+    )?;
     let content = query.query_row([term], |r| {
         Ok(Term {
             term: r.get(0)?,
@@ -38,5 +40,20 @@ pub fn get_term_id(db: &Connection, term: String) -> Result<i64, rusqlite::Error
 pub fn remove_term(db: &Connection, id: i64) -> Result<(), rusqlite::Error> {
     db.execute("DELETE FROM terms WHERE id = ?1", params![id])?;
     
+    Ok(())
+}
+
+pub fn update_term(db: &Connection, term: Term, id: i64) -> Result<(), rusqlite::Error> {
+    db.execute("
+        UPDATE terms 
+        SET
+            term = COALESCE(NULLIF(?1, ''), term),
+            definition = COALESCE(NULLIF(?2, ''), definition),
+            type = COALESCE(NULLIF(?3, ''), type),
+            origin = COALESCE(NULLIF(?4, ''), origin)
+        WHERE 
+        id = ?5
+    ", params![term.term, term.definition, term.r#type, term.origin, id])?;
+
     Ok(())
 }
