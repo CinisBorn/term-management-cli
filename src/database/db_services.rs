@@ -25,3 +25,18 @@ pub fn get_term(db: &Connection, term: String) -> Result<Term, rusqlite::Error> 
     
     Ok(content)
 }
+
+pub fn get_term_id(db: &Connection, term: String) -> Result<i64, rusqlite::Error> {
+    let mut query = db.prepare("SELECT id FROM terms WHERE term = ?1")?;
+    let id: i64 = query.query_row(params![term], |r| {
+        Ok(r.get(0)?)
+    })?;
+    
+    Ok(id)
+}
+
+pub fn remove_term(db: &Connection, id: i64) -> Result<(), rusqlite::Error> {
+    db.execute("DELETE FROM terms WHERE id = ?1", params![id])?;
+    
+    Ok(())
+}
