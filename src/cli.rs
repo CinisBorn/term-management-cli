@@ -1,4 +1,4 @@
-use crate::{cli::cli_services::get_relation_input, database::db_services::{add_term, check_term, create_relation, get_term, get_term_id, remove_term, update_term}};
+use crate::{cli::cli_services::get_relation_input, database::db_services::{add_term, check_term, create_relation, get_term, get_term_id, remove_term, update_term, get_relation}};
 use helpers::normalize_args;
 use cli_services::get_input;
 use rusqlite::Connection;
@@ -63,7 +63,14 @@ pub fn manage_operation(args: Vec<String>, db: &Connection) -> Result<String, St
                 Err(_) => Err("❌ Internal Error".to_string())
             }
         },
-        "relations_for" => todo!(),
+        "relations" => {
+            let result = get_relation(db, formatted_args[1].clone()).map_err(|e| e.to_string());
+            
+            match result  {
+                Ok(_) => Ok(format!("✅ Showing all relations to the term: {} ", formatted_args[1])),
+                Err(_) => Err(format!("❌ A critical error ocurred")) 
+            }
+        },
         "relation" => {
             let input = get_relation_input().map_err(|e| e.to_string())?;
             let result = create_relation(db, input);
