@@ -15,82 +15,54 @@ pub fn manage_operation(args: Vec<String>, db: &Connection) -> Result<String, St
 
     match formatted_args[0].as_str() {
         "add" => {
-            let user_data = get_input().map_err(|e| e.kind().to_string())?;
-            let result = add_term(db, user_data);
+            let user_data = get_input().map_err(|e| format!("Input Error: {}", e))?;
+            add_term(db, user_data).map_err(|e| format!("Database Error: {}", e))?;
 
-            match result {
-                Ok(_) => Ok("✅ The term was added successfully".to_string()),
-                Err(_) => Err("❌ The term was not added successfully".to_string()),
-            }
+            Ok(String::from("✅ The term was added successfully")) 
         }
         "remove" => {
-            let id = get_term_id(db, formatted_args[1].clone()).map_err(|e| e.to_string())?;
-            let result = remove_term(db, id);
+            let term = formatted_args[1].clone();
+            let id = get_term_id(db, term).map_err(|e| format!("❌ Database Error: {}", e))?;
+            remove_term(db, id).map_err(|e| format!("❌ Database Error: {}", e))?;
 
-            match result {
-                Ok(_) => Ok("✅ Term deleted successfully".to_string()),
-                Err(_) => Err("❌ The terms was not deleted".to_string()),
-            }
+            Ok(String::from("✅ Term deleted successfully"))
         }
         "update" => {
-            let id = get_term_id(db, formatted_args[1].clone()).map_err(|e| e.to_string())?;
-            let user_input = get_input().map_err(|e| e.to_string())?;
-            let result = update_term(db, user_input, id);
+            let term = formatted_args[1].clone();
+            let id = get_term_id(db, term).map_err(|e| format!("❌ Database Error: {}", e))?;
+            let input = get_input().map_err(|e| format!("❌ Input Error: {}", e))?;
+            update_term(db, input, id).map_err(|e| format!("❌ Database Error: {}", e))?;
 
-            match result {
-                Ok(_) => Ok("✅ Term updated successfully".to_string()),
-                Err(_) => Err("❌ Term wasn't added successfully.".to_string()),
-            }
+            Ok(String::from("✅ Term updated successfully"))
         }
         "get" => {
-            let term = get_term(db, formatted_args[1].clone()).map_err(|e| e.to_string());
+            let term =  formatted_args[1].clone();
+            let content = get_term(db, term).map_err(|e| format!("❌ Database Error: {}", e))?;
 
-            match term {
-                Ok(t) => {
-                    println!(
-                        "Term: {}; Type: {}; Origin: {}; ",
-                        t.term, t.r#type, t.origin
-                    );
-                    println!("Definition: {}", t.definition);
-
-                    Ok("✅ Term was got successfully".to_string())
-                }
-                Err(_) => Err("❌ The term was not got successfully".to_string()),
-            }
+            println!("Term: {}; Type: {}; Origin: {}; ", content.term, content.r#type, content.origin);
+            println!("Definition: {}", content.definition);
+            
+            Ok(String::from("✅ Term was got successfully"))
         }
         "check" => {
-            let result = check_term(db, formatted_args[1].clone()).map_err(|e| e.to_string());
+            let term = formatted_args[1].clone();
+            let result = check_term(db, term).map_err(|e| format!("Database Error: {}", e))?;
 
-            match result {
-                Ok(r) => {
-                    if r {
-                        Ok("✅ The term already exists!".to_string())
-                    } else {
-                        Ok("❗ The term was not found!".to_string())
-                    }
-                }
-                Err(_) => Err("❌ Internal Error".to_string()),
-            }
+            if result { Ok(String::from("✅ The term already exists"))} 
+            else { Ok(String::from("❗ The term was not found"))}
         }
         "relations" => {
-            let result = get_relation(db, formatted_args[1].clone()).map_err(|e| e.to_string());
-
-            match result {
-                Ok(_) => Ok(format!(
-                    "✅ Showing all relations to the term: {} ",
-                    formatted_args[1]
-                )),
-                Err(_) => Err(format!("❌ A critical error ocurred")),
-            }
+            let term = formatted_args[1].clone();
+            get_relation(db, term).map_err(|e| format!("Database Error: {}", e))?;
+            
+            Ok(String::from ("✅ All results was got successfully"))
         }
         "relation" => {
-            let input = get_relation_input().map_err(|e| e.to_string())?;
-            let result = create_relation(db, input);
+            let input = get_relation_input()
+                .map_err(|e| format!("Input Error: {}", e))?;
+            create_relation(db, input).map_err(|e| format!("❌Database Error: {}", e))?;
 
-            match result {
-                Ok(_) => Ok("✅ The relation as estabilished successfully".to_string()),
-                Err(_) => Err("❌  The relation was not estabilished successfully".to_string()),
-            }
+            Ok(String::from("✅ The relation was created successfully"))
         }
         _ => todo!(),
     }
