@@ -2,6 +2,5 @@
 pub struct TermRelationUserInput {
     pub from_term: String,
     pub to_term: String,
-    pub relation: String
+    pub relation: String,
 }
-
