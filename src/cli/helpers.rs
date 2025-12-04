@@ -16,7 +16,7 @@ pub fn normalize_args(mut args: Vec<String>) -> Result<Vec<String>, String> {
         let chars: Vec<char> = a.chars().collect();
         let chars_in_string: Vec<String> = chars
             .iter()
-            .filter(|c| c.is_alphanumeric())
+            .filter(|c| c.is_alphanumeric() || c.is_whitespace() || **c == '_')
             .map(|c| c.to_string())
             .collect();
         let normalized_arg = chars_in_string.join("");
