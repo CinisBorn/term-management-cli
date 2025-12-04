@@ -1,10 +1,11 @@
-use crate::database::db_services::{add_term, check_term, get_term, get_term_id, remove_term, update_term};
+use crate::{cli::cli_services::get_relation_input, database::db_services::{add_term, check_term, create_relation, get_term, get_term_id, remove_term, update_term}};
 use helpers::normalize_args;
 use cli_services::get_input;
 use rusqlite::Connection;
 
 mod cli_services;
 mod helpers;
+pub mod cli_models;
 
 pub fn manage_operation(args: Vec<String>, db: &Connection) -> Result<String, String> {
     let formatted_args = normalize_args(args)?;
@@ -63,6 +64,15 @@ pub fn manage_operation(args: Vec<String>, db: &Connection) -> Result<String, St
             }
         },
         "relations_for" => todo!(),
+        "relation" => {
+            let input = get_relation_input().map_err(|e| e.to_string())?;
+            let result = create_relation(db, input);
+            
+            match result {
+                Ok(_) => Ok("✅ The relation as estabilished successfully".to_string()),
+                Err(_) => Err("❌  The relation was not estabilished successfully".to_string())
+             }
+        }
         _ => todo!()
     }
 }

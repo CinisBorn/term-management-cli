@@ -1,4 +1,5 @@
 use crate::database::models::Term;
+use crate::cli::cli_models::TermRelationUserInput;
 use rusqlite::{Connection, params};
 
 // there is a bug where terms with white spaces will not work. The function "normalize_args"
@@ -69,4 +70,16 @@ pub fn check_term(db: &Connection, term: String) -> Result<bool, rusqlite::Error
         Err(rusqlite::Error::QueryReturnedNoRows) => Ok(false), 
         Err(e) => Err(e)
     }
+}
+
+pub fn create_relation(db: &Connection, input: TermRelationUserInput) -> Result<(), rusqlite::Error> {
+    let from_term_id = get_term_id(db, input.from_term)?;
+    let to_term_id = get_term_id(db, input.to_term)?;
+    
+    db.execute("
+        INSERT OR IGNORE INTO terms_relation (from_id, to_id, relation)
+        VALUES (?1, ?2, ?3)
+    ", params![from_term_id, to_term_id, input.relation])?;
+    
+    Ok(())
 }
