@@ -57,3 +57,16 @@ pub fn update_term(db: &Connection, term: Term, id: i64) -> Result<(), rusqlite:
 
     Ok(())
 }
+
+pub fn check_term(db: &Connection, term: String) -> Result<bool, rusqlite::Error> {
+    let mut query = db.prepare("SELECT term FROM terms WHERE term = ?1")?;
+    let result: Result<String, _> = query.query_row([term], |r| {
+        Ok(r.get(0)?)
+    });
+    
+    match result {
+        Ok(_) => Ok(true),
+        Err(rusqlite::Error::QueryReturnedNoRows) => Ok(false), 
+        Err(e) => Err(e)
+    }
+}
