@@ -9,7 +9,14 @@ fn main() -> Result<(), String>{
     let args: Vec<String> = env::args().collect();
     let db = start_db()?;
     
-    manage_operation(args, &db)?;
-    
-    Ok(())
+    match manage_operation(args, &db) {
+        Ok(m) => {
+            println!("{}", m);
+            Ok(())
+        },
+        Err(e) => {
+            eprintln!("{}", e);
+            Err(e)
+        },
+    }
 }

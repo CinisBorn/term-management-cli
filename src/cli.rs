@@ -6,7 +6,7 @@ use rusqlite::Connection;
 mod cli_services;
 mod helpers;
 
-pub fn manage_operation(args: Vec<String>, db: &Connection) -> Result<(), String> {
+pub fn manage_operation(args: Vec<String>, db: &Connection) -> Result<String, String> {
     let formatted_args = normalize_args(args)?;
     
     match formatted_args[0].as_str() {
@@ -15,8 +15,8 @@ pub fn manage_operation(args: Vec<String>, db: &Connection) -> Result<(), String
             let result = add_term(db, user_data);
             
             match result {
-                Ok(_) => println!("✅ The term was added successfully"),
-                Err(e) => println!("❌ The term was not added successfully. {}", e)
+                Ok(_) => Ok("✅ The term was added successfully".to_string()),
+                Err(_) => Err("❌ The term was not added successfully".to_string())
             }
         },
         "remove" => {
@@ -24,8 +24,8 @@ pub fn manage_operation(args: Vec<String>, db: &Connection) -> Result<(), String
             let result = remove_term(db, id);
             
             match result {
-                Ok(_) => println!("✅ Term deleted successfully"),
-                Err(_) => eprintln!("❌ The terms was not deleted")
+                Ok(_) => Ok("✅ Term deleted successfully".to_string()),
+                Err(_) => Err("❌ The terms was not deleted".to_string())
             }
         },
         "update" => {
@@ -34,20 +34,26 @@ pub fn manage_operation(args: Vec<String>, db: &Connection) -> Result<(), String
             let result = update_term(db, user_input, id);
             
             match result {
-                Ok(_) => println!("✅ Term updated successfully"),
-                Err(e) => println!("❌ Term wasn't added successfully. {}", e)
+                Ok(_) => Ok("✅ Term updated successfully".to_string()),
+                Err(_) => Err("❌ Term wasn't added successfully.".to_string())
             }
         },
         "get" => {
-            let term = get_term(db, formatted_args[1].clone()).map_err(|e| e.to_string())?;
+            let term = get_term(db, formatted_args[1].clone()).map_err(|e| e.to_string());
             
-            println!("Term: {}; Type: {}; Origin: {}; ", term.term, term.r#type, term.origin);
-            println!("Definition: {}", term.definition)
+            
+            match term {
+                Ok(t) => {
+                    println!("Term: {}; Type: {}; Origin: {}; ", t.term, t.r#type, t.origin);
+                    println!("Definition: {}", t.definition);
+                    
+                    Ok("✅ Term was got successfully".to_string())
+                },
+                Err(_) => Err("❌ The term was not got successfully".to_string())
+            }
         },
         "check" => todo!(),
         "relations_for" => todo!(),
-        _ => println!("ops")
+        _ => todo!()
     }
-
-    Ok(())
 }
