@@ -28,8 +28,8 @@ You can add terms running the `add`
 ```bash
 tdm add
 ```
-It will ask for your input. You must to specify the `term`, `type`, `definition`. `Origin` fiel is optional, but strongly recommended. You can edit these fields later. 
-> `Origin` field can be confuse in the start, but think about the source you get this term. It can be a book, hobbies, and etc... It contextualizes where you get this term.
+It will ask for your input. You must to specify the `term` and `more_information` field. You can edit these fields later. 
+> `more_information` is optional. 
 ## update 
 you can update all field from a term with the command `update`. It will ask for the same fields from `add` command. If you don't want to update some field, press "enter" (the input will be empty, so it will be skipped).
 ```bash
