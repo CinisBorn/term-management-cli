@@ -6,3 +6,4 @@ edition = "2024"
 [dependencies]
 dotenvy = "0.15.7"
 rusqlite = { version = "0.37.0", features = ["bundled"] }
+tabled = "0.20.0"

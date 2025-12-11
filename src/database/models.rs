@@ -1,3 +1,12 @@
+use tabled::Tabled;
+
+#[derive(Debug, Tabled)]
+pub struct TermMetaData {
+    pub term: String,
+    pub origin: String,
+    pub r#type: String,
+}
+
 #[derive(Debug)]
 pub struct Term {
     pub term: String,
