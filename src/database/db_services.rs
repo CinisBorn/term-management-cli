@@ -5,10 +5,10 @@ use rusqlite::{Connection, params};
 pub fn add_term(db: &Connection, term: Term) -> Result<(), rusqlite::Error> {
     db.execute(
         "
-        INSERT OR IGNORE INTO terms (term, origin, type, definition) 
-        VALUES (?1, ?2, ?3, ?4)
+        INSERT OR IGNORE INTO terms (term, more_information) 
+        VALUES (?1, ?2)
     ",
-        params![term.term, term.origin, term.r#type, term.definition],
+        params![term.term, term.more_information],
     )?;
 
     Ok(())
@@ -16,13 +16,11 @@ pub fn add_term(db: &Connection, term: Term) -> Result<(), rusqlite::Error> {
 
 pub fn get_term(db: &Connection, term: String) -> Result<Term, rusqlite::Error> {
     let mut query =
-        db.prepare("SELECT term, origin, type, definition FROM terms WHERE term = ?1")?;
+        db.prepare("SELECT term, more_information FROM terms WHERE term = ?1")?;
     let content = query.query_row([term], |r| {
         Ok(Term {
             term: r.get(0)?,
-            origin: r.get(1)?,
-            r#type: r.get(2)?,
-            definition: r.get(3)?,
+            more_information: r.get(1)?
         })
     })?;
 
@@ -48,13 +46,11 @@ pub fn update_term(db: &Connection, term: Term, id: i64) -> Result<(), rusqlite:
         UPDATE terms 
         SET
             term = COALESCE(NULLIF(?1, ''), term),
-            definition = COALESCE(NULLIF(?2, ''), definition),
-            type = COALESCE(NULLIF(?3, ''), type),
-            origin = COALESCE(NULLIF(?4, ''), origin)
+            more_information = COALESCE(NULLIF(?2, ''), more_information)
         WHERE 
-        id = ?5
+        id = ?3
     ",
-        params![term.term, term.definition, term.r#type, term.origin, id],
+        params![term.term, term.more_information, id],
     )?;
 
     Ok(())
@@ -80,10 +76,10 @@ pub fn create_relation(
 
     db.execute(
         "
-        INSERT OR IGNORE INTO terms_relation (from_id, to_id, relation)
-        VALUES (?1, ?2, ?3)
+        INSERT OR IGNORE INTO terms_relation (from_id, to_id)
+        VALUES (?1, ?2)
     ",
-        params![from_term_id, to_term_id, input.relation],
+        params![from_term_id, to_term_id],
     )?;
 
     Ok(())
@@ -107,7 +103,6 @@ pub fn get_relation(db: &Connection, term: String) -> Result<(), rusqlite::Error
         Ok(TermRelation {
             from_id: r.get(0)?,
             to_id: r.get(1)?,
-            relation: String::new(),
         })
     })?;
 

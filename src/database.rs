@@ -27,7 +27,7 @@ fn generate_tables(db: &Connection) -> Result<(), rusqlite::Error> {
         CREATE TABLE IF NOT EXISTS terms (
             id INTEGER PRIMARY KEY,
             term TEXT UNIQUE NOT NULL,
-            more_information TEXT DEFAULT 'empty', 
+            more_information TEXT DEFAULT 'empty'
         )
     ",
         (),

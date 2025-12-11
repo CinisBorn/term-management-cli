@@ -1,11 +1,10 @@
-use crate::database::db_services::{
+use crate::database::{db_services::{
     add_term, check_term, create_relation, get_relation, get_term, get_term_id, remove_term,
     update_term,
-};
+}, models::Term};
 use cli_services::{get_input, get_relation_input, view_data};
 use helpers::normalize_args;
 use rusqlite::Connection;
-use crate::database::models::TermMetaData;
 
 pub mod cli_models;
 mod cli_services;
@@ -40,13 +39,10 @@ pub fn manage_operation(args: Vec<String>, db: &Connection) -> Result<String, St
             let term =  formatted_args[1].clone();
             let content = get_term(db, term).map_err(|e| format!("❌ Database Error: {}", e))?;
 
-            view_data(&TermMetaData { 
+            view_data(&Term { 
                 term: content.term, 
-            origin: content.origin, 
-                r#type: content.r#type }
-            );
-            
-            println!("{}", content.definition);
+                more_information: content.more_information
+            });
             
             Ok(String::from("✅ Term was got successfully"))
         }
@@ -64,8 +60,7 @@ pub fn manage_operation(args: Vec<String>, db: &Connection) -> Result<String, St
             Ok(String::from ("✅ All results was got successfully"))
         }
         "relation" => {
-            let input = get_relation_input()
-                .map_err(|e| format!("Input Error: {}", e))?;
+            let input = get_relation_input().map_err(|e| format!("Input Error: {}", e))?;
             create_relation(db, input).map_err(|e| format!("❌Database Error: {}", e))?;
 
             Ok(String::from("✅ The relation was created successfully"))
