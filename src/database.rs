@@ -27,9 +27,7 @@ fn generate_tables(db: &Connection) -> Result<(), rusqlite::Error> {
         CREATE TABLE IF NOT EXISTS terms (
             id INTEGER PRIMARY KEY,
             term TEXT UNIQUE NOT NULL,
-            origin TEXT DEFAULT 'empty', 
-            type TEXT DEFAULT 'empty',
-            definition TEXT NOT NULL
+            more_information TEXT DEFAULT 'empty', 
         )
     ",
         (),
@@ -41,7 +39,6 @@ fn generate_tables(db: &Connection) -> Result<(), rusqlite::Error> {
             id INTEGER PRIMARY KEY, 
             from_id INTEGER NOT NULL,
             to_id INTEGER NOT NULL,
-            relation TEXT NOT NULL,
             
             FOREIGN KEY(from_id) REFERENCES terms(id),
             FOREIGN KEY(to_id) REFERENCES terms(id)
