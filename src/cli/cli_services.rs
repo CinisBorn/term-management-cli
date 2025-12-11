@@ -1,5 +1,5 @@
 use tabled::settings::{Alignment, Style, object::Columns};
-use crate::cli::cli_models::TermRelationUserInput;
+use crate::{cli::cli_models::TermRelationUserInput, database::models::{TermRelationView}};
 use tabled::Table;
 use crate::database::models:: Term;
 use std::io;
@@ -37,6 +37,15 @@ pub fn get_relation_input() -> Result<TermRelationUserInput, io::Error> {
 
 pub fn view_data(source: &Term) {
     let mut table = Table::new(vec![source]);
+    
+    table.modify(Columns::first(), Alignment::right());
+    table.with(Style::modern_rounded());
+    
+    println!("{}", table);
+}
+
+pub fn view_relations(source: &Vec<TermRelationView>) {
+    let mut table = Table::new(source); 
     
     table.modify(Columns::first(), Alignment::right());
     table.with(Style::modern_rounded());

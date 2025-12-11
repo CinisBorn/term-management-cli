@@ -1,5 +1,5 @@
 use crate::cli::cli_models::TermRelationUserInput;
-use crate::database::models::{Term, TermRelation};
+use crate::database::models::{Term, TermRelation, TermRelationView};
 use rusqlite::{Connection, params};
 
 pub fn add_term(db: &Connection, term: Term) -> Result<(), rusqlite::Error> {
@@ -92,28 +92,36 @@ pub fn get_term_by_id(db: &Connection, id: i64) -> Result<String, rusqlite::Erro
     Ok(term)
 }
 
-pub fn get_relation(db: &Connection, term: String) -> Result<(), rusqlite::Error> {
+pub fn get_relation(db: &Connection, term: String) -> Result<Vec<TermRelationView>, rusqlite::Error> {
     let term_id = get_term_id(db, term)?;
     let mut query = db.prepare(
         "
       SELECT from_id, to_id FROM terms_relation WHERE from_id = ?1 OR to_id = ?1  
     ",
     )?;
-    let rows = query.query_map([term_id], |r| {
+    let rows= query.query_map([term_id], |r| {
         Ok(TermRelation {
             from_id: r.get(0)?,
             to_id: r.get(1)?,
         })
     })?;
-
+    
+    let mut relations_list: Vec<TermRelation> = Vec::new();
+    let mut relations_list_view : Vec<TermRelationView> = Vec::new();
+    
     for r in rows {
-        let relation = r.unwrap().clone();
-
-        let from = get_term_by_id(db, relation.from_id)?;
-        let to = get_term_by_id(db, relation.to_id)?;
-
-        println!("{} => {}", from, to);
+        relations_list.push(r.unwrap());
     }
+    
+    for r in relations_list {
+        let from = get_term_by_id(db, r.from_id)?;
+        let to = get_term_by_id(db, r.to_id)?;
+        
+        relations_list_view.push(TermRelationView {
+            from_id: from,
+            to_id: to,
+        });
+    };
 
-    Ok(())
+    Ok(relations_list_view)
 }

@@ -1,7 +1,7 @@
-use crate::database::{db_services::{
+use crate::{cli::cli_services::view_relations, database::{db_services::{
     add_term, check_term, create_relation, get_relation, get_term, get_term_id, remove_term,
     update_term,
-}, models::Term};
+}, models::Term}};
 use cli_services::{get_input, get_relation_input, view_data};
 use helpers::normalize_args;
 use rusqlite::Connection;
@@ -55,7 +55,9 @@ pub fn manage_operation(args: Vec<String>, db: &Connection) -> Result<String, St
         }
         "relations" => {
             let term = formatted_args[1].clone();
-            get_relation(db, term).map_err(|e| format!("Database Error: {}", e))?;
+            let relations = get_relation(db, term).map_err(|e| format!("Database Error: {}", e))?;
+            
+            view_relations(&relations);
             
             Ok(String::from ("✅ All results was got successfully"))
         }

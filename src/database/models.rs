@@ -6,8 +6,14 @@ pub struct Term {
     pub more_information: String,
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug)]
 pub struct TermRelation {
     pub from_id: i64,
     pub to_id: i64,
+}
+
+#[derive(Debug, Tabled)]
+pub struct TermRelationView {
+    pub from_id: String,
+    pub to_id: String,
 }
