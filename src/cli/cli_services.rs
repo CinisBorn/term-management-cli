@@ -1,8 +1,8 @@
-use tabled::settings::{Alignment, Style, object::Columns};
-use crate::{cli::cli_models::TermRelationUserInput, database::models::{TermRelationView}};
-use tabled::Table;
-use crate::database::models:: Term;
+use crate::database::models::Term;
+use crate::{cli::cli_models::TermRelationUserInput, database::models::TermRelationView};
 use std::io;
+use tabled::Table;
+use tabled::settings::{Alignment, Style, object::Columns};
 
 pub fn get_input() -> Result<Term, io::Error> {
     let mut term = String::new();
@@ -12,7 +12,6 @@ pub fn get_input() -> Result<Term, io::Error> {
     io::stdin().read_line(&mut term)?;
     println!("👉 Type where you can find more information about this term");
     io::stdin().read_line(&mut info)?;
-
 
     Ok(Term {
         term: term.trim().to_string().to_lowercase(),
@@ -37,18 +36,18 @@ pub fn get_relation_input() -> Result<TermRelationUserInput, io::Error> {
 
 pub fn view_data(source: &Term) {
     let mut table = Table::new(vec![source]);
-    
+
     table.modify(Columns::first(), Alignment::right());
     table.with(Style::modern_rounded());
-    
+
     println!("{}", table);
 }
 
 pub fn view_relations(source: &Vec<TermRelationView>) {
-    let mut table = Table::new(source); 
-    
+    let mut table = Table::new(source);
+
     table.modify(Columns::first(), Alignment::right());
     table.with(Style::modern_rounded());
-    
+
     println!("{}", table);
 }

@@ -1,9 +1,11 @@
-use crate::{cli::cli_services::view_relations, database::{db_services::{
+use crate::database::db_services::{
     add_term, check_term, create_relation, get_relation, get_term, get_term_id, remove_term,
     update_term,
-}, models::Term}};
-use cli_services::{get_input, get_relation_input, view_data};
+};
+use cli_services::{get_input, get_relation_input, view_data, view_relations};
 use helpers::normalize_args;
+
+use crate::database::models::Term;
 use rusqlite::Connection;
 
 pub mod cli_models;
@@ -18,7 +20,7 @@ pub fn manage_operation(args: Vec<String>, db: &Connection) -> Result<String, St
             let user_data = get_input().map_err(|e| format!("Input Error: {}", e))?;
             add_term(db, user_data).map_err(|e| format!("Database Error: {}", e))?;
 
-            Ok(String::from("✅ The term was added successfully")) 
+            Ok(String::from("✅ The term was added successfully"))
         }
         "remove" => {
             let term = formatted_args[1].clone();
@@ -36,30 +38,33 @@ pub fn manage_operation(args: Vec<String>, db: &Connection) -> Result<String, St
             Ok(String::from("✅ Term updated successfully"))
         }
         "get" => {
-            let term =  formatted_args[1].clone();
+            let term = formatted_args[1].clone();
             let content = get_term(db, term).map_err(|e| format!("❌ Database Error: {}", e))?;
 
-            view_data(&Term { 
-                term: content.term, 
-                more_information: content.more_information
+            view_data(&Term {
+                term: content.term,
+                more_information: content.more_information,
             });
-            
+
             Ok(String::from("✅ Term was got successfully"))
         }
         "check" => {
             let term = formatted_args[1].clone();
             let result = check_term(db, term).map_err(|e| format!("Database Error: {}", e))?;
 
-            if result { Ok(String::from("✅ The term already exists"))} 
-            else { Ok(String::from("❗ The term was not found"))}
+            if result {
+                Ok(String::from("✅ The term already exists"))
+            } else {
+                Ok(String::from("❗ The term was not found"))
+            }
         }
         "relations" => {
             let term = formatted_args[1].clone();
             let relations = get_relation(db, term).map_err(|e| format!("Database Error: {}", e))?;
-            
+
             view_relations(&relations);
-            
-            Ok(String::from ("✅ All results was got successfully"))
+
+            Ok(String::from("✅ All results was got successfully"))
         }
         "relation" => {
             let input = get_relation_input().map_err(|e| format!("Input Error: {}", e))?;
