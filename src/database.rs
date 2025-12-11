@@ -51,7 +51,7 @@ fn generate_tables(db: &Connection) -> Result<(), rusqlite::Error> {
 }
 
 fn check_path(path: &String) {
-    if path == "/temp_db.sqlite" {
+    if path == "./temp_db.sqlite" {
         println!("⚠ Database not found! Using a temporary database for store the new data");
     } else {
         println!("✅ Database loaded successfully");
